@@ -15,4 +15,4 @@ while read line; do
 		echo_success
 	fi
 	echo
-done < url.list
+done < ${1:-url.list}
