@@ -1,0 +1,13 @@
+#!/bin/bash
+
+. /etc/init.d/functions
+
+while read line; do
+	echo -n $line
+	if curl --silent $line | grep -q asshole; then
+		echo_failure
+	else
+		echo_success
+	fi
+	echo
+done < sanka.list
