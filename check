@@ -4,7 +4,8 @@
 
 while read line; do
 	echo -n $line
-	if curl --silent $line | grep -q asshole; then
+	curl --silent $line > /tmp/qwe
+	if egrep -q 'asshole|Oleg blocked your internet' /tmp/qwe; then
 		echo_failure
 	else
 		echo_success
