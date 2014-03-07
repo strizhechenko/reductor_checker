@@ -7,8 +7,10 @@
 
 while read line; do
 	echo -n $line
-	if [ "$(/usr/bin/curl --silent --connect-timeout 2 $line)" != '302 Found. Site Block' ]; then
-		echo $line >> failed
+	/usr/bin/curl --silent --connect-timeout 2 $line 2>/dev/null 1>/tmp/curl.$$
+	retval=$?
+	if [ "$(</tmp/curl.$$)" != '302 Found. Site Block' -a "$retval" != '6' ]; then
+		echo $retval: $line>> failed
 		echo_failure
 	else
 		echo $line >> blocked
