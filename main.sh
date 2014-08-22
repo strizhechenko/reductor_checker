@@ -12,16 +12,16 @@ check() {
 	local retval=$?
 	if [ "$retval" = '0' ]; then
 	# if [ "$(</tmp/curl.$$)" != '302 Found. Site Block' -a "$retval" != '6' ]; then
-		echo $retval: $line >> failed
+		echo $retval: $line >> var/failed
 		echo_failure
 	else
 		if [ "$retval" != '4' ]; then
-			echo $retval: $line >> warning
+			echo $retval: $line >> var/warning
 			echo_warning
 			echo
 			return
 		fi
-		echo $line >> blocked
+		echo $line >> var/blocked
 		echo_success
 	fi
 	echo
@@ -30,4 +30,4 @@ check() {
 while read line; do
 	[ "$(pgrep -P $$ | wc -l)" -gt '10' ] && wait
 	check $line &
-done < ${1:-url.list}
+done < ${1:-var/url.list}
