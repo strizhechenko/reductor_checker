@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# нет dns
+# сайт лежит
+# открылась моя 404 страница
+# открылась моя blocked страница
+
+TMPFILE=/tmp/reductor.curl.$$
+curl_opts=s
+curl -$curl_opts  $@ > $TMPFILE
+ERRCODE=$?
+[ "$(<$TMPFILE)" = '302 Found. Site Block' ] && ERRCODE=0 
+grep -q 'opened as well' $TMPFILE && ERRCODE=11
+case $ERRCODE in
+	11 )
+		echo -e "opened:\t\t$@"
+		;;
+	0 | 6 )
+		echo -e "blocked:\t$@"
+		;;
+	7 )
+		if nslookup "$(echo $@ | cut -d '/' -f3)" 8.8.8.8 | grep -q 127.0.0.1; then
+			echo -e "blocked:\t$@"
+			echo dns $@ >> var/dns
+		else
+			echo -e "fail($ERRCODE):\t$@"
+		fi
+		;;
+	* )
+		echo -e "fail($ERRCODE):\t$@"
+		;;
+esac
+rm -f $TMPFILE
+exit $ERRCODE
